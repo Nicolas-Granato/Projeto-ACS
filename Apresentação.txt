@@ -1,0 +1,11 @@
+Olá a todos,
+
+Este é um projeto beta para um sistema de gestão de banco de dados para uma clínica veterinária. 
+O objetivo é criar uma plataforma simples e funcional para o controle de informações de pacientes, 
+agendamentos e histórico de consultas.
+
+Sinta-se à vontade para explorar os códigos. Por ser uma versão inicial, 
+há muito espaço para melhorias e novas funcionalidades. 
+Críticas construtivas e sugestões são muito bem-vindas!
+
+Obrigado por sua colaboração.
