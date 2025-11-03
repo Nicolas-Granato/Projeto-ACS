@@ -31,7 +31,6 @@ Siga estes passos **exatamente** para configurar o ambiente de desenvolvimento.
 
 ### 1. Clonar o Repositório
 
-```bash
 git clone [https://github.com/Nicolas-Granato/Projeto-ACS.git]
 cd [https://github.com/Nicolas-Granato/Projeto-ACS.git]
 
