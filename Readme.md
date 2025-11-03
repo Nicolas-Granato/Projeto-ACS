@@ -2,6 +2,8 @@
 
 Este é o repositório central para o nosso projeto de sistema de gerenciamento de clínica veterinária. Este README serve como nosso guia interno para garantir que todos estejamos alinhados.
 
+**Importante:** Este é um **aplicativo desktop (offline)**. Ele não usa e não precisa de um servidor web (como o Django). Nossa arquitetura é focada em rodar localmente na máquina do usuário.
+
 ## 👥 Equipe
 
 * [Lavinia Butinholi] - (@LaviniaButinholiBasilio)
@@ -12,21 +14,20 @@ Este é o repositório central para o nosso projeto de sistema de gerenciamento 
 
 ## 🚀 Stack de Tecnologias
 
-Para manter a consistência, vamos nos ater a esta stack:
+Para manter a consistência, esta é a nossa stack oficial. Todo o desenvolvimento deve usar estas ferramentas:
 
-* **Backend:** Python
-* **Framework:** Django
-* **API:** Django REST Framework (DRF)
-* **Banco de Dados (Dev):** SQLite (padrão do Django)
-* **Banco de Dados (Prod):** PostgreSQL (a definir)
-* **Frontend:** Django Templates + HTMX
+* **Linguagem:** Python
+* **Interface Gráfica (GUI):** PySimpleGUI
+* **Banco de Dados Local:** SQLite (um arquivo `clinica.db`)
+* **ORM (Acesso ao Banco):** **SQLAlchemy** (para evitar escrever SQL na mão)
 * **Controle de Versão:** Git & GitHub
+* **Empacotamento (Futuro):** PyInstaller (para criar o `.exe`)
 
 ---
 
 ## 🛠️ Como Rodar o Projeto Localmente (Setup)
 
-Siga estes passos **exatamente** para configurar o ambiente de desenvolvimento na sua máquina.
+Siga estes passos **exatamente** para configurar o ambiente de desenvolvimento.
 
 ### 1. Clonar o Repositório
 
