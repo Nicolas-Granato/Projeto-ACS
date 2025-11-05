@@ -46,6 +46,7 @@ class Paciente(Base):
     id = Column("idPaciente", Integer, primary_key=True, autoincrement=True)
     nomePaciente = Column("NomePaciente", String(255), nullable=False)
     peso = Column("Peso", Float)
+    porte = Column(Enum("Gigante","Grande","Medio","Pequeno", name="enum_Porte"), nullable=False)
     sexo = Column(Enum("M","F", name="enum_Sexo"), nullable=False)
     dataDeNascimento = Column("DataDeNascimento", Date)
     raca_id = Column("Raca", Integer, ForeignKey("tabela_raca.idRaca"))
