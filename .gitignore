@@ -1,1 +1,3 @@
 venv/
+main/database/__pycache__/
+clinica.db

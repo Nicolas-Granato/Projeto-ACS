@@ -1,10 +1,11 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from .models import Base, Tutor, Veterinario, Especie, Raca, Paciente, RegistroDeCondicoes, Consulta, RegistroDeCondicaoDoPaciente 
+from .models import Base
 
 urlDaDatabase = "sqlite:///clinica.db"
 engine = create_engine(urlDaDatabase)
 
 sessao = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 
-#O resto é só abrir criar as funcoes cruds, abrindo sessao bonitinho
+def criarBancoDeDados():
+    Base.metadata.create_all(bind=engine)
