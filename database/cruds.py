@@ -32,3 +32,17 @@ class TutorCRUD:
 
     def atualizar_tutor(self, nome_novo: str):
         return
+    
+    def deletar_tutor(self, tutor_id: int):
+        tutor_para_deletar = self.busca_por_tutor_pelo_ID(tutor_id)
+
+        if tutor_para_deletar:
+            self.db.delete(tutor_para_deletar)
+            self.db.commit()
+
+class VeterinarioCrud:
+
+    def __init__(self,db: Session):
+        self.db = db
+
+    
