@@ -8,18 +8,18 @@ class TutorCRUD:
         self.db = db
 
     def criar_tutor(self, nomeTutor, endereco, cidade, telefone):
-        objetoNovoTutor = models.Tutor(
+        objeto_novo_tutor = models.Tutor(
             nomeTutor=nomeTutor,
             endereco=endereco,
             cidade=cidade,
             telefone=telefone
         )
 
-        self.db.add(objetoNovoTutor)
+        self.db.add(objeto_novo_tutor)
         self.db.commit()
-        self.db.refresh(objetoNovoTutor)
+        self.db.refresh(objeto_novo_tutor)
 
-        return objetoNovoTutor
+        return objeto_novo_tutor
     
     def lista_de_tutores_cadastrados(self):
         return self.db.query(models.Tutor).all()
@@ -45,4 +45,44 @@ class VeterinarioCrud:
     def __init__(self,db: Session):
         self.db = db
 
+    def criar_veterinario(self, nomeVeterinario):
+        objeto_novo_veterionario = models.Veterinario(
+            nomeVeterinario=nomeVeterinario
+        )
+
+        self.db.add(objeto_novo_veterionario)
+        self.db.commit()
+        self.db.refresh(objeto_novo_veterionario)
+    
+        return objeto_novo_veterionario
+    
+    def lista_de_veterinarios_cadastrados(self):
+        return self.db.query(models.Veterinario).all()
+    
+    def busca_por_veterionario_pelo_nome(self, nome_veterinario: str):
+        return self.db.query(models.Veterinario).filter(models.Veterinario.nomeVeterinario.like(f"%{nome_veterinario}%")).all()
+
+    def busca_por_veterinario_pelo_ID(self, id_veterinario: int):
+        return self.db.query(models.Veterinario).filter(models.Veterinario.id == id_veterinario).first
+    
+    def deletar_veterinario(self, id_veterinario: int):
+        veterinario_para_deletar = self.busca_por_veterinario_pelo_ID(id_veterinario)
+
+        if (veterinario_para_deletar):
+            self.db.delete(veterinario_para_deletar)
+            self.db.commit()
+
+class EspecieCrud:
+
+    def __init__(self, db: Session):
+        self.db = db
+
+    def criar_especie(self, nomeEspecie):
+        objeto_nova_especie = models.Especie(
+            nomeEspecie = nomeEspecie
+        )
+
+        self.db.add(objeto_nova_especie)
+        self.db.commit()
+        self.db.refresh(objeto_nova_especie)
     
