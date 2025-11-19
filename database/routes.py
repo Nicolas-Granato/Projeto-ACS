@@ -158,3 +158,120 @@ class EspecieCrud:
             return True
         
         return False
+
+class RacaCrud:
+
+    def __init__(self, db: Session):
+        self.db = db
+    
+    def criar_raca(self, nomeRaca: str, especie_id: int):
+        obj_raca = models.Raca(
+            nomeRaca=nomeRaca,
+            especie_id=especie_id
+        )
+        self.db.add(obj_raca)
+        self.db.commit()
+        self.db.refresh(obj_raca)
+
+        return obj_raca
+    
+    def lista_de_racas_cadastradas(self):
+        return self.db.query(models.Raca).all()
+    
+    def busca_raca_pelo_id(self, id_raca: int):
+        return self.db.query(models.Raca).filter(models.Raca.id == id_raca).first()
+    
+    def busca_raca_pelo_nome(self, nomeRaca: str):
+        return self.db.query(models.Raca).filter(models.Raca.nomeRaca.like(f"%{nomeRaca}%")).all()
+    
+    def atualizar_raca(self, id_raca: int, nomeRaca_novo=None, especie_nova_id=None):
+        raca_para_atualizar = self.busca_raca_pelo_id(id_raca)
+
+        if raca_para_atualizar:
+            if nomeRaca_novo is not None:
+                raca_para_atualizar.nomeRaca = nomeRaca_novo
+            if especie_nova_id is not None:
+                raca_para_atualizar.especie_id = especie_nova_id
+
+            self.db.commit()
+            self.db.refresh(raca_para_atualizar)
+            return raca_para_atualizar
+        
+        return None
+    
+    def delete_raca(self, id_raca: int):
+        raca_para_deletar = self.busca_raca_pelo_id(id_raca)
+
+        if raca_para_deletar:
+            self.db.delete(raca_para_deletar)
+            self.db.commit()
+            return True
+        
+        return False
+    
+class PacienteCRUD:
+
+    def __init__(self, db: Session):
+        self.db = db
+    
+    def criar_paciente(self, nomePaciente, peso, porte, sexo, dataDeNascimento, raca_id, tutor_id):
+        obj_paciente = models.Paciente(
+            nomePaciente=nomePaciente,
+            peso=peso,
+            porte=porte,
+            sexo=sexo,
+            dataDeNascimento=dataDeNascimento,
+            raca_id=raca_id,
+            tutor_id=tutor_id
+        )
+        self.db.add(obj_paciente)
+        self.db.commit()
+        self.db.refresh(obj_paciente)
+
+        return obj_paciente
+    
+    def lista_de_pacientes_cadastrados(self):
+        return self.db.query(models.Paciente).all()
+    
+    def buscar_paciente_pelo_ID(self, id_paciente: int):
+        return self.db.query(models.Paciente).filter(models.Paciente.id == id_paciente).first()
+    
+    def busca_paciente_pelo_nome(self, nomePaciente: str):
+        return self.db.query(models.Paciente).filter(models.Paciente.nomePaciente.like(f"%{nomePaciente}%")).all()
+
+    def atualizar_paciente(self, id_paciente, nomePaciente_novo=None, peso_novo=None, porte_novo=None, sexo_novo=None, dataDeNascimento_nova=None, raca_nova_id=None, tutor_novo_id=None):
+        paciente_para_atualizar = self.buscar_paciente_pelo_ID(id_paciente)
+        
+        if paciente_para_atualizar:
+            if nomePaciente_novo is not None:
+                paciente_para_atualizar.nomePaciente = nomePaciente_novo
+            if peso_novo is not None:
+                paciente_para_atualizar.peso = peso_novo
+            if porte_novo is not None:
+                paciente_para_atualizar.porte = porte_novo
+            if sexo_novo is not None:
+                paciente_para_atualizar.sexo = sexo_novo
+            if dataDeNascimento_nova is not None:
+                paciente_para_atualizar.dataDeNascimento = dataDeNascimento_nova
+            if raca_nova_id is not None:
+                paciente_para_atualizar.raca_id = raca_nova_id
+            if tutor_novo_id is not None:
+                paciente_para_atualizar.tutor_id = tutor_novo_id
+            
+            self.db.commit()
+            self.db.refresh(paciente_para_atualizar)
+
+            return paciente_para_atualizar
+    
+        return None
+    
+    def deletar_paciente(self, id_paciente):
+        paciente_para_deletar = self.buscar_paciente_pelo_ID(id_paciente)
+
+        if paciente_para_deletar:
+            self.db.delete(paciente_para_deletar)
+            self.db.commit()
+
+            return True
+        
+        return False
