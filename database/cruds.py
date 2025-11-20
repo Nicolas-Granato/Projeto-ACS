@@ -1,13 +1,13 @@
 from . import models
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import date
 
 class TutorCRUD:
 
     def __init__(self,db: Session):
         self.db = db
 
-    def criar_tutor(self, nomeTutor, endereco, cidade, telefone):
+    def criar_tutor(self, nomeTutor: str, endereco: str, cidade: str, telefone: str):
         objeto_novo_tutor = models.Tutor(
             nomeTutor=nomeTutor,
             endereco=endereco,
@@ -65,7 +65,7 @@ class VeterinarioCrud:
     def __init__(self,db: Session):
         self.db = db
 
-    def criar_veterinario(self, nomeVeterinario):
+    def criar_veterinario(self, nomeVeterinario: str):
         objeto_novo_veterionario = models.Veterinario(
             nomeVeterinario=nomeVeterinario
         )
@@ -93,10 +93,10 @@ class VeterinarioCrud:
             if nomeVeterinario_novo is not None:
                 veterinario.nomeVeterinario = nomeVeterinario_novo
                 
-                self.db.commit()
-                self.db.refresh(veterinario)
+        self.db.commit()
+        self.db.refresh(veterinario)
 
-                return veterinario
+        return veterinario
         
         return None
 
@@ -117,7 +117,7 @@ class EspecieCrud:
     def __init__(self, db: Session):
         self.db = db
 
-    def criar_especie(self, nomeEspecie):
+    def criar_especie(self, nomeEspecie: str):
         objeto_nova_especie = models.Especie(
             nomeEspecie = nomeEspecie
         )
@@ -142,9 +142,9 @@ class EspecieCrud:
             if nomeEspecie_novo is not None:
                 especie.nomeEspecie = nomeEspecie_novo
 
-                self.db.commit()
-                self.db.refresh(especie)
-                return especie
+            self.db.commit()
+            self.db.refresh(especie)
+            return especie
             
         return None
     
@@ -199,7 +199,7 @@ class RacaCrud:
         
         return None
     
-    def delete_raca(self, id_raca: int):
+    def deletar_raca(self, id_raca: int):
         raca_para_deletar = self.busca_raca_pelo_id(id_raca)
 
         if raca_para_deletar:
@@ -214,7 +214,7 @@ class PacienteCRUD:
     def __init__(self, db: Session):
         self.db = db
     
-    def criar_paciente(self, nomePaciente, peso, porte, sexo, dataDeNascimento, raca_id, tutor_id):
+    def criar_paciente(self, nomePaciente: str, peso: int, porte: int, sexo: str, dataDeNascimento: date, raca_id: int, tutor_id: int):
         obj_paciente = models.Paciente(
             nomePaciente=nomePaciente,
             peso=peso,
@@ -238,8 +238,14 @@ class PacienteCRUD:
     
     def busca_paciente_pelo_nome(self, nomePaciente: str):
         return self.db.query(models.Paciente).filter(models.Paciente.nomePaciente.like(f"%{nomePaciente}%")).all()
+    
+    def busca_pacientes_pelo_tutor(self, id_tutor: int):
+        return self.db.query(models.Paciente).filter(models.Paciente.tutor_id == id_tutor).all()
+    
+    def busca_pacientes_pela_raca(self, id_raca: int):
+        return self.db.query(models.Paciente).filter(models.Paciente.raca_id == id_raca).all()
 
-    def atualizar_paciente(self, id_paciente, nomePaciente_novo=None, peso_novo=None, porte_novo=None, sexo_novo=None, dataDeNascimento_nova=None, raca_nova_id=None, tutor_novo_id=None):
+    def atualizar_paciente(self, id_paciente: int, nomePaciente_novo=None, peso_novo=None, porte_novo=None, sexo_novo=None, dataDeNascimento_nova=None, raca_nova_id=None, tutor_novo_id=None):
         paciente_para_atualizar = self.buscar_paciente_pelo_ID(id_paciente)
         
         if paciente_para_atualizar:
@@ -265,11 +271,188 @@ class PacienteCRUD:
     
         return None
     
-    def deletar_paciente(self, id_paciente):
+    def deletar_paciente(self, id_paciente: int):
         paciente_para_deletar = self.buscar_paciente_pelo_ID(id_paciente)
 
         if paciente_para_deletar:
             self.db.delete(paciente_para_deletar)
+            self.db.commit()
+
+            return True
+        
+        return False
+
+class RegistroDeCondicoesCRUD:
+
+    def __init__(self, db: Session):
+        self.db = db
+
+    def criar_registro_de_condicao(self, nomeCondicao: str, descricao: str):
+        obj_registro = models.RegistroDeCondicoes(
+            nomeCondicao=nomeCondicao,
+            descricao=descricao
+        )
+        
+        self.db.add(obj_registro)
+        self.db.commit()
+        self.db.refresh(obj_registro)
+
+        return obj_registro
+    
+    def lista_de_condicoes(self):
+        return self.db.query(models.RegistroDeCondicoes).all()
+    
+    def busca_condicao_pelo_ID(self, id_condicao: int):
+        return self.db.query(models.RegistroDeCondicoes).filter(models.RegistroDeCondicoes.id == id_condicao).first()
+    
+    def busca_condicao_pelo_nome(self, nome_condicao: str):
+        return self.db.query(models.RegistroDeCondicoes).filter(models.RegistroDeCondicoes.nomeCondicao.like(f"%{nome_condicao}%")).all()
+    
+    def atualizar_condicao(self, id_condicao: int, nome_novo_condicao=None, descricao_nova=None):
+        condicao_para_atualizar = self.busca_condicao_pelo_ID(id_condicao)
+        if condicao_para_atualizar:
+            if nome_novo_condicao is not None:
+                condicao_para_atualizar.nomeCondicao = nome_novo_condicao
+            if descricao_nova is not None:
+                condicao_para_atualizar.descricao = descricao_nova
+            
+            self.db.commit()
+            self.db.refresh(condicao_para_atualizar)
+            
+            return condicao_para_atualizar
+        
+        return None
+    
+    def deletar_condicao(self, id_condicao: int):
+        condicao_para_deletar = self.busca_condicao_pelo_ID(id_condicao)
+
+        if condicao_para_deletar:
+
+            self.db.delete(condicao_para_deletar)
+            self.db.commit()
+        
+            return True
+        
+        return False
+    
+class ConsultasCRUD:
+
+    def __init__(self, db: Session):
+        self.db = db
+
+    def criar_consulta(self, paciente_id: int, veterinario_id: int, data: date, observacoes: str):
+        obj_consulta = models.Consulta(
+            paciente_id=paciente_id,
+            veterinario_id=veterinario_id,
+            data=data,
+            observacoes=observacoes
+        )
+
+        self.db.add(obj_consulta)
+        self.db.commit()
+        self.db.refresh(obj_consulta)
+
+        return obj_consulta
+    
+    def lista_consultas(self):
+        return self.db.query(models.Consulta).all()
+    
+    def busca_consulta_pelo_ID(self, id_consulta: int):
+        return self.db.query(models.Consulta).filter(models.Consulta.id == id_consulta).first()
+    
+    def busca_consulta_pelo_paciente(self, id_paciente: int):
+        return self.db.query(models.Consulta).filter(models.Consulta.paciente_id == id_paciente).all()
+    
+    def busca_consulta_pelo_veterinario(self, id_veterinario: int):
+        return self.db.query(models.Consulta).filter(models.Consulta.veterinario_id == id_veterinario).all()
+    
+    def busca_consulta_pela_data(self, data: date):
+        return self.db.query(models.Consulta).filter(models.Consulta.data == data).all()
+    
+    def atualizar_consulta(self, id_consulta: int, paciente_id_novo=None, veterinario_id_novo=None, data_nova=None, observacoes_novas=None):
+        consulta_para_atualizar = self.busca_consulta_pelo_ID(id_consulta)
+
+        if consulta_para_atualizar:
+            if paciente_id_novo is not None:
+                consulta_para_atualizar.paciente_id = paciente_id_novo
+            if veterinario_id_novo is not None:
+                consulta_para_atualizar.veterinario_id = veterinario_id_novo
+            if data_nova is not None:
+                consulta_para_atualizar.data = data_nova
+            if observacoes_novas is not None:
+                consulta_para_atualizar.observacoes = observacoes_novas
+            
+            self.db.commit()
+            self.db.refresh(consulta_para_atualizar)
+
+            return consulta_para_atualizar
+        
+        return None
+    
+    def deletar_consulta(self, id_consulta: int):
+        consulta_para_deletar = self.busca_consulta_pelo_ID(id_consulta)
+
+        if consulta_para_deletar:
+            self.db.delete(consulta_para_deletar)
+            self.db.commit()
+
+            return True
+        
+        return False
+    
+class RegistroDeCondicaoDoPacienteCRUD:
+
+    def __init__(self, db: Session):
+        self.db = db
+        
+    def criar_registro_de_condicao_do_paciente(self, paciente_id: int, condicao_id: int, observacoes: str):
+        obj_registro_de_condicao = models.RegistroDeCondicaoDoPaciente(
+            paciente_id=paciente_id,
+            condicao_id=condicao_id,
+            observacoes=observacoes
+        )
+        
+        self.db.add(obj_registro_de_condicao)
+        self.db.commit()
+        self.db.refresh(obj_registro_de_condicao)
+
+        return obj_registro_de_condicao
+
+    def lista_registros_de_condicao_do_paciente(self):
+        return self.db.query(models.RegistroDeCondicaoDoPaciente).all()
+    
+    def busca_registro_de_condicao_do_paciente_pelo_ID(self, id_registro_de_condicao: int):
+        return self.db.query(models.RegistroDeCondicaoDoPaciente).filter(models.RegistroDeCondicaoDoPaciente.id == id_registro_de_condicao).first()
+    
+    def busca_registro_de_condicao_do_paciente_pelo_paciente(self, id_paciente: int):
+        return self.db.query(models.RegistroDeCondicaoDoPaciente).filter(models.RegistroDeCondicaoDoPaciente.paciente_id == id_paciente).all()
+    
+    def busca_registro_de_condicao_do_paciente_pela_condicao(self, id_condicao: int):
+        return self.db.query(models.RegistroDeCondicaoDoPaciente).filter(models.RegistroDeCondicaoDoPaciente.condicao_id == id_condicao).all()
+    
+    def atualizar_registro_de_condicao_do_paciente(self, id_registro_de_condicao: int, paciente_id_novo=None, condicao_id_nova=None, observacoes_novas=None):
+        registro_para_atualizar = self.busca_registro_de_condicao_do_paciente_pelo_ID(id_registro_de_condicao)
+        
+        if registro_para_atualizar:
+            if paciente_id_novo is not None:
+                registro_para_atualizar.paciente_id = paciente_id_novo
+            if condicao_id_nova is not None:
+                registro_para_atualizar.condicao_id = condicao_id_nova
+            if observacoes_novas is not None:
+                registro_para_atualizar.observacoes = observacoes_novas
+            
+            self.db.commit()
+            self.db.refresh(registro_para_atualizar)
+
+            return registro_para_atualizar
+        
+        return None
+    
+    def deletar_registro_de_condicao_do_paciente(self, id_registro: int):
+        registro_para_deletar = self.busca_registro_de_condicao_do_paciente_pelo_ID(id_registro)
+
+        if registro_para_deletar:
+            self.db.delete(registro_para_deletar)
             self.db.commit()
 
             return True
