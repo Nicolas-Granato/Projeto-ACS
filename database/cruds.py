@@ -65,9 +65,11 @@ class VeterinarioCrud:
     def __init__(self,db: Session):
         self.db = db
 
-    def criar_veterinario(self, nomeVeterinario: str):
+    def criar_veterinario(self, nomeVeterinario: str, nivelDeAcesso: str, hashSenha: str):
         objeto_novo_veterionario = models.Veterinario(
-            nomeVeterinario=nomeVeterinario
+            nomeVeterinario=nomeVeterinario,
+            nivelDeAcesso=nivelDeAcesso,
+            hashSenha=hashSenha
         )
 
         self.db.add(objeto_novo_veterionario)
@@ -85,13 +87,17 @@ class VeterinarioCrud:
     def busca_por_veterinario_pelo_ID(self, id_veterinario: int):
         return self.db.query(models.Veterinario).filter(models.Veterinario.id == id_veterinario).first()
     
-    def atualizar_veterinario(self, id_veterinario: int, nomeVeterinario_novo=None):
+    def atualizar_veterinario(self, id_veterinario: int, nomeVeterinario_novo=None, nivelDeAcesso_novo=None, hashSenha_nova=None):
         veterinario = self.busca_por_veterinario_pelo_ID(id_veterinario)
 
         if veterinario:
 
             if nomeVeterinario_novo is not None:
                 veterinario.nomeVeterinario = nomeVeterinario_novo
+            if nivelDeAcesso_novo is not None:
+                veterinario.nivelDeAcesso = nivelDeAcesso_novo  
+            if hashSenha_nova is not None:
+                veterinario.hashSenha = hashSenha_nova
                 
         self.db.commit()
         self.db.refresh(veterinario)
