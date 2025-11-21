@@ -19,6 +19,8 @@ class Veterinario(Base):
 
     id = Column("idVeterinario", Integer, primary_key=True, autoincrement=True)
     nomeVeterinario = Column("NomeVeterinario", String(255), nullable=False)
+    nivelDeAcesso = Column(Enum("Administrador","Usuário", name="enum_NivelDeAcesso"), nullable=False)
+    hashSenha = Column("HashSenha", String(255), nullable=False)
 
     consultas = relationship("Consulta", back_populates="veterinario")
 
