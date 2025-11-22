@@ -1,6 +1,7 @@
 from . import models
 from sqlalchemy.orm import Session
 from datetime import date
+import bcrypt
 
 class TutorCRUD:
 
@@ -65,11 +66,9 @@ class VeterinarioCrud:
     def __init__(self,db: Session):
         self.db = db
 
-    def criar_veterinario(self, nomeVeterinario: str, nivelDeAcesso: str, hashSenha: str):
+    def criar_veterinario(self, nomeVeterinario: str, CRM: str):
         objeto_novo_veterionario = models.Veterinario(
-            nomeVeterinario=nomeVeterinario,
-            nivelDeAcesso=nivelDeAcesso,
-            hashSenha=hashSenha
+            CRM=CRM
         )
 
         self.db.add(objeto_novo_veterionario)
@@ -87,17 +86,15 @@ class VeterinarioCrud:
     def busca_por_veterinario_pelo_ID(self, id_veterinario: int):
         return self.db.query(models.Veterinario).filter(models.Veterinario.id == id_veterinario).first()
     
-    def atualizar_veterinario(self, id_veterinario: int, nomeVeterinario_novo=None, nivelDeAcesso_novo=None, hashSenha_nova=None):
+    def atualizar_veterinario(self, id_veterinario: int, nomeVeterinario_novo=None, CRM_novo=None):
         veterinario = self.busca_por_veterinario_pelo_ID(id_veterinario)
 
         if veterinario:
 
             if nomeVeterinario_novo is not None:
                 veterinario.nomeVeterinario = nomeVeterinario_novo
-            if nivelDeAcesso_novo is not None:
-                veterinario.nivelDeAcesso = nivelDeAcesso_novo  
-            if hashSenha_nova is not None:
-                veterinario.hashSenha = hashSenha_nova
+            if CRM_novo is not None:
+                veterinario.CRM = CRM_novo
                 
         self.db.commit()
         self.db.refresh(veterinario)
@@ -459,6 +456,68 @@ class RegistroDeCondicaoDoPacienteCRUD:
 
         if registro_para_deletar:
             self.db.delete(registro_para_deletar)
+            self.db.commit()
+
+            return True
+        
+        return False
+
+class UsuarioCRUD:
+    def __init__(self, db: Session):
+        self.db = db
+    
+    def criar_usuario(self, nome: str, username: str, senha_plana: str, nivelDeAcesso: str):
+        salt = bcrypt.gensalt()
+        senha_hashed = bcrypt.hashpw(senha_plana.encode("utf-8"), salt)
+
+        obj_usuario = models.Usuario(
+            nome=nome,
+            username=username,
+            senha_hash=senha_hashed.decode("utf-8"),
+            nivelDeAcesso=nivelDeAcesso
+        )
+
+        try:
+            self.db.add(obj_usuario)
+            self.db.commit()
+            self.db.refresh(obj_usuario)
+
+            return obj_usuario
+        
+        except:
+            print(f"Usuario {username} já existente.")
+            self.db.rollback()
+            
+            return None
+        
+    def busca_usuario_pelo_ID(self, id_usuario: int):
+        return self.db.query(models.Usuario).filter(models.Usuario.id == id_usuario).first()
+        
+    def atualizar_usuario(self, id_usuario: int, nome_novo=None, username_novo=None, senha_nova=None):
+        salt = bcrypt.gensalt()
+        senha_hashed = bcrypt.hashpw(senha_nova.encode("utf-8"), salt)
+
+        usuario_para_atualizar = self.busca_usuario_pelo_ID(id_usuario)
+
+        if usuario_para_atualizar:
+            if nome_novo is not None:
+                usuario_para_atualizar.nome = nome_novo
+            if username_novo is not None:
+                usuario_para_atualizar.username = username_novo
+            if senha_nova is not None:
+                usuario_para_atualizar.senha_hash = senha_hashed.decode("utf-8")
+        
+            self.db.commit()
+            self.db.refresh(usuario_para_atualizar)
+            return usuario_para_atualizar
+        
+        return None
+    
+    def deletar_usuario(self, id_usuario: int):
+        usuario_para_deletar = self.busca_usuario_pelo_ID(id_usuario)
+
+        if usuario_para_deletar:
+            self.db.delete(usuario_para_deletar)
             self.db.commit()
 
             return True

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, ForeignKey, Enum, String, Integer, Date, Text, Float
+from sqlalchemy import Column, ForeignKey, Enum, String, Integer, Date, Text, Float, Boolean
 from sqlalchemy.orm import declarative_base, relationship
 
 Base = declarative_base()
@@ -18,11 +18,10 @@ class Veterinario(Base):
     __tablename__ = "tabela_veterinario"
 
     id = Column("idVeterinario", Integer, primary_key=True, autoincrement=True)
-    nomeVeterinario = Column("NomeVeterinario", String(255), nullable=False)
-    nivelDeAcesso = Column(Enum("Administrador","Usuário", name="enum_NivelDeAcesso"), nullable=False)
-    hashSenha = Column("HashSenha", String(255), nullable=False)
+    CRM = Column("CRM", String(255), nullable=False)
 
     consultas = relationship("Consulta", back_populates="veterinario")
+    usuario = relationship("Usuario", back_populates="usuario_veterinario")
 
 class Especie(Base):
     __tablename__ = "tabela_especie"
@@ -90,3 +89,14 @@ class RegistroDeCondicaoDoPaciente(Base):
 
     paciente = relationship("Paciente", back_populates="registros_condicao")
     condicao = relationship("RegistroDeCondicoes", back_populates="registros_paciente")
+
+class Usuario(Base):
+    __tablename__ = "tabela_usuarios"
+
+    id = Column("idUsuario", Integer, primary_key=True, autoincrement=True)
+    nome = Column("nomeDoUsuario", String(255), nullable=False)
+    username = Column("nomeDeUsuario", String(255), nullable=False, unique=True)
+    senha_hash = Column("senhaUsuario", nullable=False)
+    nivelDeAcesso = Column(Enum("usuarioPadrao","veterinario","admin", "enum_nivelDeAcesso"), nullable=False)
+
+    usuario_veterinario = relationship("Veterinario", back_populates="usuario")
