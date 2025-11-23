@@ -18,7 +18,7 @@ def get_db():
     db = sessao()
 
     try:
-
         yield db
+        
     finally:
         db.close()
