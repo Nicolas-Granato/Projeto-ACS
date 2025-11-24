@@ -1,5 +1,6 @@
 from . import models
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from datetime import date
 import bcrypt
 
@@ -61,13 +62,14 @@ class TutorCRUD:
 
         return False
 
-class VeterinarioCrud:
+class VeterinarioCRUD:
 
     def __init__(self,db: Session):
         self.db = db
 
-    def criar_veterinario(self, nomeVeterinario: str, CRM: str):
+    def criar_veterinario(self, idDeusuario: int, nomeVeterinario: str, CRM: str):
         objeto_novo_veterionario = models.Veterinario(
+            idDeusuario=idDeusuario,
             CRM=CRM
         )
 
@@ -80,26 +82,24 @@ class VeterinarioCrud:
     def lista_de_veterinarios_cadastrados(self):
         return self.db.query(models.Veterinario).all()
     
-    def busca_por_veterionario_pelo_nome(self, nome_veterinario: str):
-        return self.db.query(models.Veterinario).filter(models.Veterinario.nomeVeterinario.like(f"%{nome_veterinario}%")).all()
+    def busca_por_veterinario_pelo_nome(self, nome_veterinario: str):
+        return self.db.query(models.Veterinario).join(models.Usuario).filter(models.Usuario.nome.like(f"%{nome_veterinario}%")).all()
 
     def busca_por_veterinario_pelo_ID(self, id_veterinario: int):
         return self.db.query(models.Veterinario).filter(models.Veterinario.id == id_veterinario).first()
     
-    def atualizar_veterinario(self, id_veterinario: int, nomeVeterinario_novo=None, CRM_novo=None):
+    def atualizar_veterinario(self, id_veterinario: int, CRM_novo=None):
         veterinario = self.busca_por_veterinario_pelo_ID(id_veterinario)
 
         if veterinario:
 
-            if nomeVeterinario_novo is not None:
-                veterinario.nomeVeterinario = nomeVeterinario_novo
             if CRM_novo is not None:
                 veterinario.CRM = CRM_novo
                 
-        self.db.commit()
-        self.db.refresh(veterinario)
+            self.db.commit()
+            self.db.refresh(veterinario)
 
-        return veterinario
+            return veterinario
         
         return None
 
@@ -115,7 +115,7 @@ class VeterinarioCrud:
 
         return False
 
-class EspecieCrud:
+class EspecieCRUD:
 
     def __init__(self, db: Session):
         self.db = db
@@ -162,7 +162,7 @@ class EspecieCrud:
         
         return False
 
-class RacaCrud:
+class RacaCRUD:
 
     def __init__(self, db: Session):
         self.db = db
@@ -484,8 +484,8 @@ class UsuarioCRUD:
 
             return obj_usuario
         
-        except:
-            print(f"Usuario {username} já existente.")
+        except IntegrityError as e:
+            print(f"Erro: O nome de usuário '{username}' já existe. Detalhes: {e}")
             self.db.rollback()
             
             return None
@@ -494,8 +494,6 @@ class UsuarioCRUD:
         return self.db.query(models.Usuario).filter(models.Usuario.id == id_usuario).first()
         
     def atualizar_usuario(self, id_usuario: int, nome_novo=None, username_novo=None, senha_nova=None):
-        salt = bcrypt.gensalt()
-        senha_hashed = bcrypt.hashpw(senha_nova.encode("utf-8"), salt)
 
         usuario_para_atualizar = self.busca_usuario_pelo_ID(id_usuario)
 
@@ -505,6 +503,8 @@ class UsuarioCRUD:
             if username_novo is not None:
                 usuario_para_atualizar.username = username_novo
             if senha_nova is not None:
+                salt = bcrypt.gensalt()
+                senha_hashed = bcrypt.hashpw(senha_nova.encode("utf-8"), salt)
                 usuario_para_atualizar.senha_hash = senha_hashed.decode("utf-8")
         
             self.db.commit()
