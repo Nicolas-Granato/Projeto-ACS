@@ -492,6 +492,9 @@ class UsuarioCRUD:
         
     def busca_usuario_pelo_ID(self, id_usuario: int):
         return self.db.query(models.Usuario).filter(models.Usuario.id == id_usuario).first()
+    
+    def busca_usuario_pelo_username(self, username: str):
+        return self.db.query(models.Usuario).filter(models.Usuario.username.like(f"%{username}%")).first()
         
     def atualizar_usuario(self, id_usuario: int, nome_novo=None, username_novo=None, senha_nova=None):
 
@@ -506,10 +509,15 @@ class UsuarioCRUD:
                 salt = bcrypt.gensalt()
                 senha_hashed = bcrypt.hashpw(senha_nova.encode("utf-8"), salt)
                 usuario_para_atualizar.senha_hash = senha_hashed.decode("utf-8")
-        
-            self.db.commit()
-            self.db.refresh(usuario_para_atualizar)
-            return usuario_para_atualizar
+
+            try:
+                self.db.commit()
+                self.db.refresh(usuario_para_atualizar)
+                return usuario_para_atualizar
+            
+            except IntegrityError as e:
+                print(f"Erro: O nome de usuário '{username_novo}' já existe. Detalhes: {e}")
+                self.db.rollback()
         
         return None
     
