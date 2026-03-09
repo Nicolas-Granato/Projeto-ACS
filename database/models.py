@@ -18,6 +18,7 @@ class Veterinario(Base):
     __tablename__ = "tabela_veterinario"
 
     id = Column("idVeterinario", Integer, primary_key=True, autoincrement=True)
+    idDeUsuario = Column("idDeUsuario", ForeignKey("tabela_usuarios.idUsuario"), unique=True)
     CRM = Column("CRM", String(255), nullable=False)
 
     consultas = relationship("Consulta", back_populates="veterinario")
@@ -96,7 +97,7 @@ class Usuario(Base):
     id = Column("idUsuario", Integer, primary_key=True, autoincrement=True)
     nome = Column("nomeDoUsuario", String(255), nullable=False)
     username = Column("nomeDeUsuario", String(255), nullable=False, unique=True)
-    senha_hash = Column("senhaUsuario", nullable=False)
-    nivelDeAcesso = Column(Enum("usuarioPadrao","veterinario","admin", "enum_nivelDeAcesso"), nullable=False)
+    senha_hash = Column("senhaUsuario", String(255), nullable=False)
+    nivelDeAcesso = Column(Enum("usuarioPadrao","veterinario","admin", name="enum_nivelDeAcesso"), nullable=False)
 
-    usuario_veterinario = relationship("Veterinario", back_populates="usuario")
+    usuario_veterinario = relationship("Veterinario", back_populates="usuario", uselist=False)
