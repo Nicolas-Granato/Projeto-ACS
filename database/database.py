@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
+from contextlib import contextmanager
 from .models import Base
 
 urlDaDatabase = "sqlite:///clinica.db"
@@ -19,12 +20,10 @@ sessao = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 def criarBancoDeDados():
     Base.metadata.create_all(bind=engine)
 
+@contextmanager
 def get_db():
-
     db = sessao()
-
     try:
         yield db
-        
     finally:
-        db.close()
+        db.close() 
