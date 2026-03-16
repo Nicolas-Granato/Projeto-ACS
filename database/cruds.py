@@ -387,10 +387,10 @@ class RegistroDeCondicoesCRUD:
                 condicao_para_atualizar.descricao = descricao_nova
 
         try:            
-                self.db.commit()
-                self.db.refresh(condicao_para_atualizar)
-                
-                return condicao_para_atualizar
+            self.db.commit()
+            self.db.refresh(condicao_para_atualizar)
+
+            return condicao_para_atualizar
         
         except IntegrityError:
             self.db.rollback()
@@ -505,7 +505,7 @@ class RegistroDeCondicaoDoPacienteCRUD:
 
             return obj_registro_de_condicao
         
-        except:
+        except IntegrityError:
             self.db.rollback()
             return None
 
@@ -588,7 +588,7 @@ class UsuarioCRUD:
         return self.db.query(models.Usuario).filter(models.Usuario.id == id_usuario).first()
     
     def busca_usuario_pelo_username(self, username: str):
-        return self.db.query(models.Usuario).filter(models.Usuario.username.like(f"%{username}%")).all()
+        return self.db.query(models.Usuario).filter(models.Usuario.username == username).first()
         
     def atualizar_usuario(self, id_usuario: int, nome_novo=None, username_novo=None, senha_nova=None):
 
