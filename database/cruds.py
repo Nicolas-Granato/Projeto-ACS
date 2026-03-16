@@ -556,7 +556,6 @@ class RegistroDeCondicaoDoPacienteCRUD:
             self.db.rollback()
             return False
 
-
 class UsuarioCRUD:
     def __init__(self, db: Session):
         self.db = db
