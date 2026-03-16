@@ -10,7 +10,6 @@ class Autenticacao:
         usuario = self.crud.busca_usuario_pelo_username(username)
         
         if not usuario:
-            print(f"Usuario {username} não encontrado.")
             return None
         
         try:

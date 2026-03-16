@@ -17,11 +17,16 @@ class TutorCRUD:
             telefone=telefone
         )
 
-        self.db.add(objeto_novo_tutor)
-        self.db.commit()
-        self.db.refresh(objeto_novo_tutor)
+        try:
+            self.db.add(objeto_novo_tutor)
+            self.db.commit()
+            self.db.refresh(objeto_novo_tutor)
 
-        return objeto_novo_tutor
+            return objeto_novo_tutor
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def lista_de_tutores_cadastrados(self):
         return self.db.query(models.Tutor).all()
@@ -43,24 +48,29 @@ class TutorCRUD:
             if cidade_nova is not None:
                 tutor.cidade = cidade_nova
             if telefone_novo is not None:
-                tutor.telefone = telefone_novo
-            
+               tutor.telefone = telefone_novo
+                
+        try:
             self.db.commit()
             self.db.refresh(tutor)
             return tutor
 
-        return None
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def deletar_tutor(self, tutor_id: int):
         tutor_para_deletar = self.busca_por_tutor_pelo_ID(tutor_id)
 
-        if tutor_para_deletar:
-            self.db.delete(tutor_para_deletar)
-            self.db.commit()
-
-            return True
-
-        return False
+        try:
+            if tutor_para_deletar:
+                self.db.delete(tutor_para_deletar)
+                self.db.commit()
+                return True
+    
+        except IntegrityError:
+            self.db.rollback()
+            return False
 
 class VeterinarioCRUD:
 
@@ -68,16 +78,23 @@ class VeterinarioCRUD:
         self.db = db
 
     def criar_veterinario(self, idDeusuario: int, nomeVeterinario: str, CRM: str):
+        
         objeto_novo_veterionario = models.Veterinario(
             idDeusuario=idDeusuario,
+            nomeVeterinario=nomeVeterinario,
             CRM=CRM
         )
-
-        self.db.add(objeto_novo_veterionario)
-        self.db.commit()
-        self.db.refresh(objeto_novo_veterionario)
-    
-        return objeto_novo_veterionario
+        
+        try:
+            self.db.add(objeto_novo_veterionario)
+            self.db.commit()
+            self.db.refresh(objeto_novo_veterionario)
+        
+            return objeto_novo_veterionario
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def lista_de_veterinarios_cadastrados(self):
         return self.db.query(models.Veterinario).all()
@@ -95,25 +112,31 @@ class VeterinarioCRUD:
 
             if CRM_novo is not None:
                 veterinario.CRM = CRM_novo
-                
+
+        try:            
             self.db.commit()
             self.db.refresh(veterinario)
 
             return veterinario
-        
-        return None
+            
+        except IntegrityError:
+            self.db.rollback()       
+            return None
 
         
     def deletar_veterinario(self, id_veterinario: int):
         veterinario_para_deletar = self.busca_por_veterinario_pelo_ID(id_veterinario)
 
-        if veterinario_para_deletar:
-            self.db.delete(veterinario_para_deletar)
-            self.db.commit()
-            
-            return True
+        try:
+            if veterinario_para_deletar:
+                self.db.delete(veterinario_para_deletar)
+                self.db.commit()
+                
+                return True
 
-        return False
+        except IntegrityError:
+            self.db.rollback()
+            return False
 
 class EspecieCRUD:
 
@@ -125,9 +148,16 @@ class EspecieCRUD:
             nomeEspecie = nomeEspecie
         )
 
-        self.db.add(objeto_nova_especie)
-        self.db.commit()
-        self.db.refresh(objeto_nova_especie)
+        try:
+            self.db.add(objeto_nova_especie)
+            self.db.commit()
+            self.db.refresh(objeto_nova_especie)
+
+            return objeto_nova_especie
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
 
     def lista_de_especies_cadastradas(self):
         return self.db.query(models.Especie).all()
@@ -145,22 +175,27 @@ class EspecieCRUD:
             if nomeEspecie_novo is not None:
                 especie.nomeEspecie = nomeEspecie_novo
 
+        try:
             self.db.commit()
             self.db.refresh(especie)
             return especie
-            
-        return None
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def deletar_especie(self, id_especie: int):
         especie_para_deletar = self.buscar_especie_pelo_ID(id_especie)
 
-        if especie_para_deletar:
-            self.db.delete(especie_para_deletar)
-            self.db.commit()
-
+        try:
+            if especie_para_deletar:
+                self.db.delete(especie_para_deletar)
+                self.db.commit()
             return True
         
-        return False
+        except IntegrityError:
+            self.db.rollback()
+            return False
 
 class RacaCRUD:
 
@@ -168,15 +203,22 @@ class RacaCRUD:
         self.db = db
     
     def criar_raca(self, nomeRaca: str, especie_id: int):
+
         obj_raca = models.Raca(
             nomeRaca=nomeRaca,
             especie_id=especie_id
         )
-        self.db.add(obj_raca)
-        self.db.commit()
-        self.db.refresh(obj_raca)
 
-        return obj_raca
+        try:
+            self.db.add(obj_raca)
+            self.db.commit()
+            self.db.refresh(obj_raca)
+
+            return obj_raca
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def lista_de_racas_cadastradas(self):
         return self.db.query(models.Raca).all()
@@ -196,21 +238,27 @@ class RacaCRUD:
             if especie_nova_id is not None:
                 raca_para_atualizar.especie_id = especie_nova_id
 
+        try:
             self.db.commit()
             self.db.refresh(raca_para_atualizar)
             return raca_para_atualizar
-        
-        return None
+            
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def deletar_raca(self, id_raca: int):
         raca_para_deletar = self.busca_raca_pelo_id(id_raca)
 
-        if raca_para_deletar:
-            self.db.delete(raca_para_deletar)
-            self.db.commit()
-            return True
-        
-        return False
+        try:
+            if raca_para_deletar:
+                self.db.delete(raca_para_deletar)
+                self.db.commit()
+                return True
+
+        except IntegrityError:
+            self.db.rollback()
+            return False
     
 class PacienteCRUD:
 
@@ -218,6 +266,7 @@ class PacienteCRUD:
         self.db = db
     
     def criar_paciente(self, nomePaciente: str, peso: int, porte: int, sexo: str, dataDeNascimento: date, raca_id: int, tutor_id: int):
+        
         obj_paciente = models.Paciente(
             nomePaciente=nomePaciente,
             peso=peso,
@@ -227,11 +276,17 @@ class PacienteCRUD:
             raca_id=raca_id,
             tutor_id=tutor_id
         )
-        self.db.add(obj_paciente)
-        self.db.commit()
-        self.db.refresh(obj_paciente)
 
-        return obj_paciente
+        try:
+            self.db.add(obj_paciente)
+            self.db.commit()
+            self.db.refresh(obj_paciente)
+
+            return obj_paciente
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def lista_de_pacientes_cadastrados(self):
         return self.db.query(models.Paciente).all()
@@ -266,24 +321,30 @@ class PacienteCRUD:
                 paciente_para_atualizar.raca_id = raca_nova_id
             if tutor_novo_id is not None:
                 paciente_para_atualizar.tutor_id = tutor_novo_id
-            
+                
+        try:
             self.db.commit()
             self.db.refresh(paciente_para_atualizar)
-
-            return paciente_para_atualizar
     
-        return None
+            return paciente_para_atualizar
+
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def deletar_paciente(self, id_paciente: int):
         paciente_para_deletar = self.buscar_paciente_pelo_ID(id_paciente)
 
-        if paciente_para_deletar:
-            self.db.delete(paciente_para_deletar)
-            self.db.commit()
+        try:
+            if paciente_para_deletar:
+                self.db.delete(paciente_para_deletar)
+                self.db.commit()
 
-            return True
+                return True
         
-        return False
+        except IntegrityError:
+            self.db.rollback()
+            return False
 
 class RegistroDeCondicoesCRUD:
 
@@ -293,14 +354,19 @@ class RegistroDeCondicoesCRUD:
     def criar_registro_de_condicao(self, nomeCondicao: str, descricao: str):
         obj_registro = models.RegistroDeCondicoes(
             nomeCondicao=nomeCondicao,
-            descricao=descricao
+            descricao=descricao,
         )
-        
-        self.db.add(obj_registro)
-        self.db.commit()
-        self.db.refresh(obj_registro)
+            
+        try:
+            self.db.add(obj_registro)
+            self.db.commit()
+            self.db.refresh(obj_registro)
 
-        return obj_registro
+            return obj_registro
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def lista_de_condicoes(self):
         return self.db.query(models.RegistroDeCondicoes).all()
@@ -313,30 +379,36 @@ class RegistroDeCondicoesCRUD:
     
     def atualizar_condicao(self, id_condicao: int, nome_novo_condicao=None, descricao_nova=None):
         condicao_para_atualizar = self.busca_condicao_pelo_ID(id_condicao)
+
         if condicao_para_atualizar:
             if nome_novo_condicao is not None:
                 condicao_para_atualizar.nomeCondicao = nome_novo_condicao
             if descricao_nova is not None:
                 condicao_para_atualizar.descricao = descricao_nova
-            
-            self.db.commit()
-            self.db.refresh(condicao_para_atualizar)
-            
-            return condicao_para_atualizar
+
+        try:            
+                self.db.commit()
+                self.db.refresh(condicao_para_atualizar)
+                
+                return condicao_para_atualizar
         
-        return None
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def deletar_condicao(self, id_condicao: int):
         condicao_para_deletar = self.busca_condicao_pelo_ID(id_condicao)
 
-        if condicao_para_deletar:
+        try:
+            if condicao_para_deletar:
+                self.db.delete(condicao_para_deletar)
+                self.db.commit()
 
-            self.db.delete(condicao_para_deletar)
-            self.db.commit()
-        
-            return True
-        
-        return False
+                return True
+            
+        except IntegrityError:
+            self.db.rollback()
+            return False
     
 class ConsultasCRUD:
 
@@ -351,11 +423,16 @@ class ConsultasCRUD:
             observacoes=observacoes
         )
 
-        self.db.add(obj_consulta)
-        self.db.commit()
-        self.db.refresh(obj_consulta)
+        try:
+            self.db.add(obj_consulta)
+            self.db.commit()
+            self.db.refresh(obj_consulta)
 
-        return obj_consulta
+            return obj_consulta
+        
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def lista_consultas(self):
         return self.db.query(models.Consulta).all()
@@ -384,24 +461,30 @@ class ConsultasCRUD:
                 consulta_para_atualizar.data = data_nova
             if observacoes_novas is not None:
                 consulta_para_atualizar.observacoes = observacoes_novas
-            
+                
+        try:
             self.db.commit()
             self.db.refresh(consulta_para_atualizar)
 
             return consulta_para_atualizar
-        
-        return None
+            
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def deletar_consulta(self, id_consulta: int):
         consulta_para_deletar = self.busca_consulta_pelo_ID(id_consulta)
 
-        if consulta_para_deletar:
-            self.db.delete(consulta_para_deletar)
-            self.db.commit()
-
-            return True
-        
-        return False
+        try:
+            if consulta_para_deletar:
+                self.db.delete(consulta_para_deletar)
+                self.db.commit()
+            
+                return True
+            
+        except IntegrityError:
+            self.db.rollback()
+            return False
     
 class RegistroDeCondicaoDoPacienteCRUD:
 
@@ -414,12 +497,17 @@ class RegistroDeCondicaoDoPacienteCRUD:
             condicao_id=condicao_id,
             observacoes=observacoes
         )
-        
-        self.db.add(obj_registro_de_condicao)
-        self.db.commit()
-        self.db.refresh(obj_registro_de_condicao)
+            
+        try:
+            self.db.add(obj_registro_de_condicao)
+            self.db.commit()
+            self.db.refresh(obj_registro_de_condicao)
 
-        return obj_registro_de_condicao
+            return obj_registro_de_condicao
+        
+        except:
+            self.db.rollback()
+            return None
 
     def lista_registros_de_condicao_do_paciente(self):
         return self.db.query(models.RegistroDeCondicaoDoPaciente).all()
@@ -443,24 +531,31 @@ class RegistroDeCondicaoDoPacienteCRUD:
                 registro_para_atualizar.condicao_id = condicao_id_nova
             if observacoes_novas is not None:
                 registro_para_atualizar.observacoes = observacoes_novas
-            
+
+        try:        
             self.db.commit()
             self.db.refresh(registro_para_atualizar)
 
             return registro_para_atualizar
         
-        return None
+        except IntegrityError:
+            self.db.rollback()
+            return None
     
     def deletar_registro_de_condicao_do_paciente(self, id_registro: int):
         registro_para_deletar = self.busca_registro_de_condicao_do_paciente_pelo_ID(id_registro)
 
-        if registro_para_deletar:
-            self.db.delete(registro_para_deletar)
-            self.db.commit()
+        try:
+            if registro_para_deletar:
+                self.db.delete(registro_para_deletar)
+                self.db.commit()
 
-            return True
-        
-        return False
+                return True
+            
+        except IntegrityError:
+            self.db.rollback()
+            return False
+
 
 class UsuarioCRUD:
     def __init__(self, db: Session):
@@ -485,7 +580,6 @@ class UsuarioCRUD:
             return obj_usuario
         
         except IntegrityError as e:
-            print(f"Erro: O nome de usuário '{username}' já existe. Detalhes: {e}")
             self.db.rollback()
             
             return None
@@ -494,7 +588,7 @@ class UsuarioCRUD:
         return self.db.query(models.Usuario).filter(models.Usuario.id == id_usuario).first()
     
     def busca_usuario_pelo_username(self, username: str):
-        return self.db.query(models.Usuario).filter(models.Usuario.username.like(f"%{username}%")).first()
+        return self.db.query(models.Usuario).filter(models.Usuario.username.like(f"%{username}%")).all()
         
     def atualizar_usuario(self, id_usuario: int, nome_novo=None, username_novo=None, senha_nova=None):
 
@@ -515,8 +609,7 @@ class UsuarioCRUD:
                 self.db.refresh(usuario_para_atualizar)
                 return usuario_para_atualizar
             
-            except IntegrityError as e:
-                print(f"Erro: O nome de usuário '{username_novo}' já existe. Detalhes: {e}")
+            except IntegrityError:
                 self.db.rollback()
         
         return None
@@ -524,10 +617,13 @@ class UsuarioCRUD:
     def deletar_usuario(self, id_usuario: int):
         usuario_para_deletar = self.busca_usuario_pelo_ID(id_usuario)
 
-        if usuario_para_deletar:
-            self.db.delete(usuario_para_deletar)
-            self.db.commit()
+        try:
+            if usuario_para_deletar:
+                self.db.delete(usuario_para_deletar)
+                self.db.commit()
 
-            return True
+                return True
         
-        return False
+        except IntegrityError:
+            self.db.rollback()
+            return False
