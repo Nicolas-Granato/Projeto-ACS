@@ -40,7 +40,10 @@ class TutorCRUD:
     def atualizar_tutor(self, tutor_id: int, nomeTutor_novo=None, endereco_novo=None, cidade_nova=None, telefone_novo=None):
         tutor = self.busca_por_tutor_pelo_ID(tutor_id)
 
-        if tutor:
+        if not tutor:
+            return None
+                
+        try:
             if nomeTutor_novo is not None:
                 tutor.nomeTutor = nomeTutor_novo
             if endereco_novo is not None:
@@ -49,10 +52,10 @@ class TutorCRUD:
                 tutor.cidade = cidade_nova
             if telefone_novo is not None:
                tutor.telefone = telefone_novo
-                
-        try:
+
             self.db.commit()
             self.db.refresh(tutor)
+
             return tutor
 
         except IntegrityError:
@@ -77,11 +80,10 @@ class VeterinarioCRUD:
     def __init__(self,db: Session):
         self.db = db
 
-    def criar_veterinario(self, idDeusuario: int, nomeVeterinario: str, CRM: str):
+    def criar_veterinario(self, idDeusuario: int, CRM: str):
         
         objeto_novo_veterionario = models.Veterinario(
             idDeusuario=idDeusuario,
-            nomeVeterinario=nomeVeterinario,
             CRM=CRM
         )
         
@@ -108,12 +110,13 @@ class VeterinarioCRUD:
     def atualizar_veterinario(self, id_veterinario: int, CRM_novo=None):
         veterinario = self.busca_por_veterinario_pelo_ID(id_veterinario)
 
-        if veterinario:
+        if not veterinario:
+            return None
 
+        try:   
             if CRM_novo is not None:
                 veterinario.CRM = CRM_novo
 
-        try:            
             self.db.commit()
             self.db.refresh(veterinario)
 
@@ -122,7 +125,6 @@ class VeterinarioCRUD:
         except IntegrityError:
             self.db.rollback()       
             return None
-
         
     def deletar_veterinario(self, id_veterinario: int):
         veterinario_para_deletar = self.busca_por_veterinario_pelo_ID(id_veterinario)
@@ -171,11 +173,13 @@ class EspecieCRUD:
     def atualizar_especie(self, id_especie: int, nomeEspecie_novo=None):
         especie = self.buscar_especie_pelo_ID(id_especie)
 
-        if especie:
+        if not especie:
+            return None
+
+        try:
             if nomeEspecie_novo is not None:
                 especie.nomeEspecie = nomeEspecie_novo
 
-        try:
             self.db.commit()
             self.db.refresh(especie)
             return especie
@@ -191,7 +195,7 @@ class EspecieCRUD:
             if especie_para_deletar:
                 self.db.delete(especie_para_deletar)
                 self.db.commit()
-            return True
+                return True
         
         except IntegrityError:
             self.db.rollback()
@@ -232,15 +236,18 @@ class RacaCRUD:
     def atualizar_raca(self, id_raca: int, nomeRaca_novo=None, especie_nova_id=None):
         raca_para_atualizar = self.busca_raca_pelo_id(id_raca)
 
-        if raca_para_atualizar:
+        if not raca_para_atualizar:
+            return None
+
+        try:
             if nomeRaca_novo is not None:
                 raca_para_atualizar.nomeRaca = nomeRaca_novo
             if especie_nova_id is not None:
                 raca_para_atualizar.especie_id = especie_nova_id
 
-        try:
             self.db.commit()
             self.db.refresh(raca_para_atualizar)
+
             return raca_para_atualizar
             
         except IntegrityError:
@@ -306,7 +313,10 @@ class PacienteCRUD:
     def atualizar_paciente(self, id_paciente: int, nomePaciente_novo=None, peso_novo=None, porte_novo=None, sexo_novo=None, dataDeNascimento_nova=None, raca_nova_id=None, tutor_novo_id=None):
         paciente_para_atualizar = self.buscar_paciente_pelo_ID(id_paciente)
         
-        if paciente_para_atualizar:
+        if not paciente_para_atualizar:
+            return None
+                
+        try:
             if nomePaciente_novo is not None:
                 paciente_para_atualizar.nomePaciente = nomePaciente_novo
             if peso_novo is not None:
@@ -321,8 +331,7 @@ class PacienteCRUD:
                 paciente_para_atualizar.raca_id = raca_nova_id
             if tutor_novo_id is not None:
                 paciente_para_atualizar.tutor_id = tutor_novo_id
-                
-        try:
+
             self.db.commit()
             self.db.refresh(paciente_para_atualizar)
     
@@ -380,13 +389,15 @@ class RegistroDeCondicoesCRUD:
     def atualizar_condicao(self, id_condicao: int, nome_novo_condicao=None, descricao_nova=None):
         condicao_para_atualizar = self.busca_condicao_pelo_ID(id_condicao)
 
-        if condicao_para_atualizar:
+        if not condicao_para_atualizar:
+            return None
+
+        try:    
             if nome_novo_condicao is not None:
                 condicao_para_atualizar.nomeCondicao = nome_novo_condicao
             if descricao_nova is not None:
                 condicao_para_atualizar.descricao = descricao_nova
-
-        try:            
+        
             self.db.commit()
             self.db.refresh(condicao_para_atualizar)
 
@@ -452,7 +463,10 @@ class ConsultasCRUD:
     def atualizar_consulta(self, id_consulta: int, paciente_id_novo=None, veterinario_id_novo=None, data_nova=None, observacoes_novas=None):
         consulta_para_atualizar = self.busca_consulta_pelo_ID(id_consulta)
 
-        if consulta_para_atualizar:
+        if not consulta_para_atualizar:
+            return None
+                
+        try:
             if paciente_id_novo is not None:
                 consulta_para_atualizar.paciente_id = paciente_id_novo
             if veterinario_id_novo is not None:
@@ -461,8 +475,7 @@ class ConsultasCRUD:
                 consulta_para_atualizar.data = data_nova
             if observacoes_novas is not None:
                 consulta_para_atualizar.observacoes = observacoes_novas
-                
-        try:
+
             self.db.commit()
             self.db.refresh(consulta_para_atualizar)
 
@@ -524,7 +537,10 @@ class RegistroDeCondicaoDoPacienteCRUD:
     def atualizar_registro_de_condicao_do_paciente(self, id_registro_de_condicao: int, paciente_id_novo=None, condicao_id_nova=None, observacoes_novas=None):
         registro_para_atualizar = self.busca_registro_de_condicao_do_paciente_pelo_ID(id_registro_de_condicao)
         
-        if registro_para_atualizar:
+        if not registro_para_atualizar:
+            return None
+
+        try:  
             if paciente_id_novo is not None:
                 registro_para_atualizar.paciente_id = paciente_id_novo
             if condicao_id_nova is not None:
@@ -532,7 +548,6 @@ class RegistroDeCondicaoDoPacienteCRUD:
             if observacoes_novas is not None:
                 registro_para_atualizar.observacoes = observacoes_novas
 
-        try:        
             self.db.commit()
             self.db.refresh(registro_para_atualizar)
 
@@ -593,7 +608,10 @@ class UsuarioCRUD:
 
         usuario_para_atualizar = self.busca_usuario_pelo_ID(id_usuario)
 
-        if usuario_para_atualizar:
+        if not usuario_para_atualizar:
+            return None
+
+        try:
             if nome_novo is not None:
                 usuario_para_atualizar.nome = nome_novo
             if username_novo is not None:
@@ -603,13 +621,12 @@ class UsuarioCRUD:
                 senha_hashed = bcrypt.hashpw(senha_nova.encode("utf-8"), salt)
                 usuario_para_atualizar.senha_hash = senha_hashed.decode("utf-8")
 
-            try:
-                self.db.commit()
-                self.db.refresh(usuario_para_atualizar)
-                return usuario_para_atualizar
+            self.db.commit()
+            self.db.refresh(usuario_para_atualizar)
+            return usuario_para_atualizar
             
-            except IntegrityError:
-                self.db.rollback()
+        except IntegrityError:
+            self.db.rollback()
         
         return None
     

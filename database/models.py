@@ -53,7 +53,7 @@ class Raca(Base):
 
     id = Column("idRaca", Integer, primary_key=True, autoincrement=True)
     nomeRaca = Column("NomeRaca", String(255), nullable=False)
-    fkEspecie = Column("Especie", Integer, ForeignKey("tabela_especie.idEspecie", ondelete="RESTRICT"), nullable=False)
+    especie_id = Column("Especie", Integer, ForeignKey("tabela_especie.idEspecie", ondelete="RESTRICT"), nullable=False)
 
     especie = relationship(
         "Especie", 
@@ -75,8 +75,8 @@ class Paciente(Base):
     porte = Column(Enum("Gigante","Grande","Medio","Pequeno", name="enum_Porte"), nullable=False)
     sexo = Column(Enum("M","F", name="enum_Sexo"), nullable=False)
     dataDeNascimento = Column("DataDeNascimento", Date)
-    fkRaca = Column("Raca", Integer, ForeignKey("tabela_raca.idRaca", ondelete="RESTRICT"))
-    fkTutor = Column("Tutor", Integer, ForeignKey("tabela_tutor.idTutor", ondelete="RESTRICT"))
+    raca_id = Column("Raca", Integer, ForeignKey("tabela_raca.idRaca", ondelete="RESTRICT"))
+    tutor_id = Column("Tutor", Integer, ForeignKey("tabela_tutor.idTutor", ondelete="RESTRICT"))
 
     tutor = relationship(
         "Tutor", 
@@ -116,8 +116,8 @@ class Consulta(Base):
     __tablename__ = "tabela_consultas"
 
     id = Column("idConsulta", Integer, primary_key=True, autoincrement=True)
-    fkPaciente = Column("idPaciente", ForeignKey("tabela_paciente.idPaciente", ondelete="RESTRICT"))
-    fkVeterinario = Column("idVeterinario", ForeignKey("tabela_veterinario.idVeterinario", ondelete="RESTRICT"))
+    paciente_id = Column("idPaciente", ForeignKey("tabela_paciente.idPaciente", ondelete="RESTRICT"))
+    veterinario_id = Column("idVeterinario", ForeignKey("tabela_veterinario.idVeterinario", ondelete="RESTRICT"))
     data = Column("Data", Date, nullable=False, index=True)
     observacoes = Column("Observacoes", Text)
 
@@ -137,8 +137,8 @@ class RegistroDeCondicaoDoPaciente(Base):
     __tablename__ = "tabela_de_registro_de_condicao_do_paciente"
 
     id = Column("idRegistro", Integer, primary_key=True, autoincrement=True)
-    fkPaciente = Column("idPaciente", Integer, ForeignKey("tabela_paciente.idPaciente", ondelete="CASCADE"))
-    fkCondicao = Column("idCondicao", Integer, ForeignKey("tabela_de_registros_de_condicoes.idCondicao", ondelete="RESTRICT"))
+    paciente_id = Column("idPaciente", Integer, ForeignKey("tabela_paciente.idPaciente", ondelete="CASCADE"))
+    condicao_id = Column("idCondicao", Integer, ForeignKey("tabela_de_registros_de_condicoes.idCondicao", ondelete="RESTRICT"))
     observacoes = Column("Observacoes", Text)
 
     paciente = relationship(
