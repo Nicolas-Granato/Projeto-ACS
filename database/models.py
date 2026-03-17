@@ -40,7 +40,7 @@ class Especie(Base):
     __tablename__ = "tabela_especie"
 
     id = Column("idEspecie", Integer, primary_key=True, autoincrement=True)
-    nomeEspecie = Column("NomeEspecie", String(255), nullable=False)
+    nomeEspecie = Column("NomeEspecie", String(255), nullable=False, unique=True)
 
     racas = relationship(
         "Raca", 
@@ -104,7 +104,7 @@ class RegistroDeCondicoes(Base):
     __tablename__ = "tabela_de_registros_de_condicoes"
 
     id = Column("idCondicao", Integer, primary_key=True, autoincrement=True)
-    nomeCondicao = Column("NomeCondicao", String(255), nullable=False)
+    nomeCondicao = Column("NomeCondicao", String(255), nullable=False, unique=True)
     descricao = Column("Descricao", Text)
 
     registros_paciente = relationship(
@@ -149,6 +149,7 @@ class RegistroDeCondicaoDoPaciente(Base):
     condicao = relationship(
         "RegistroDeCondicoes", 
         back_populates="registros_paciente",
+        passive_deletes=True,
     )
 
 class Usuario(Base):

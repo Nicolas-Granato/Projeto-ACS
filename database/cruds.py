@@ -80,10 +80,10 @@ class VeterinarioCRUD:
     def __init__(self,db: Session):
         self.db = db
 
-    def criar_veterinario(self, idDeusuario: int, CRM: str):
+    def criar_veterinario(self, idUsuario: int, CRM: str):
         
         objeto_novo_veterionario = models.Veterinario(
-            idDeusuario=idDeusuario,
+            idUsuario=idUsuario,
             CRM=CRM
         )
         
