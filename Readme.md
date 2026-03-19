@@ -228,25 +228,4 @@ python main.py
 
 ---
 
-## 🗺️ Roadmap (Pós-MVP)
-
-- [ ] Interface gráfica completa com CustomTkinter
-- [ ] Tela de login com validação visual
-- [ ] Dashboard com estatísticas da clínica
-- [ ] Emissão de prontuários em PDF
-- [ ] Sistema de agendamento com calendário
-- [ ] Backup automático do banco de dados
-- [ ] Relatórios gerenciais exportáveis
-
----
-
-## 📝 Observações sobre o MVP
-
-Este é um **Produto Mínimo Viável (MVP)**. O foco desta versão foi:
-
-1. **Modelar corretamente o domínio** — todas as entidades e seus relacionamentos estão definidos
-2. **Garantir a integridade dos dados** — FK constraints, hash de senhas, rollback em erros
-3. **Estabelecer a arquitetura** — separação clara entre camadas para facilitar evolução
-4. **Validar o backend** — toda a lógica de persistência está funcional e testável
-
-A interface gráfica com **CustomTkinter** será desenvolvida na próxima iteração, aproveitando a base sólida construída neste MVP.
+A interface gráfica com **CustomTkinter** será desenvolvida.
