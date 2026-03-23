@@ -159,6 +159,7 @@ class Usuario(Base):
     nome = Column("nomeDoUsuario", String(255), nullable=False, index=True)
     username = Column("nomeDeUsuario", String(255), nullable=False, unique=True)
     senha_hash = Column("senhaUsuario", String(255), nullable=False)
+    email = Column("emailUsuario", String(255), nullable=False, unique=True)
     nivelDeAcesso = Column(Enum("usuarioPadrao","veterinario","admin", name="enum_nivelDeAcesso"), nullable=False)
 
     usuario_veterinario = relationship(

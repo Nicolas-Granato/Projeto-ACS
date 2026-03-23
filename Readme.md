@@ -46,7 +46,7 @@ O projeto segue uma arquitetura em camadas bem definida, onde cada nível tem re
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     CAMADA DE APRESENTAÇÃO                  │
-│                    (CustomTkinter / GUI)                     │
+│                    (CustomTkinter / GUI)                    │
 │   Telas, Formulários, Janelas, Widgets, Navegação           │
 └────────────────────────────┬────────────────────────────────┘
                              │ chama

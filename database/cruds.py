@@ -575,7 +575,7 @@ class UsuarioCRUD:
     def __init__(self, db: Session):
         self.db = db
     
-    def criar_usuario(self, nome: str, username: str, senha_plana: str, nivelDeAcesso: str):
+    def criar_usuario(self, nome: str, username: str, senha_plana: str, nivelDeAcesso: str, emailUsuario: str):
         salt = bcrypt.gensalt()
         senha_hashed = bcrypt.hashpw(senha_plana.encode("utf-8"), salt)
 
@@ -583,7 +583,8 @@ class UsuarioCRUD:
             nome=nome,
             username=username,
             senha_hash=senha_hashed.decode("utf-8"),
-            nivelDeAcesso=nivelDeAcesso
+            nivelDeAcesso=nivelDeAcesso,
+            emailUsuario=emailUsuario
         )
 
         try:
@@ -593,7 +594,7 @@ class UsuarioCRUD:
 
             return obj_usuario
         
-        except IntegrityError as e:
+        except IntegrityError:
             self.db.rollback()
             
             return None

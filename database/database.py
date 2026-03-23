@@ -20,6 +20,7 @@ sessao = sessionmaker(autoflush=False, autocommit=False, bind=engine)
 def criarBancoDeDados():
     Base.metadata.create_all(bind=engine)
 
+#funcao incorreta, depois corrigir
 @contextmanager
 def get_db():
     db = sessao()
